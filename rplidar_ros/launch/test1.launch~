@@ -1,0 +1,38 @@
+<launch>
+
+  <param name="/use_sim_time" value="false"/>  
+
+  <!-- Start the two lasers -->
+
+  <node name="rplidarNode1"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+  <param name="serial_port"         type="string" value="/dev/ttyUSB1"/>
+  <param name="serial_baudrate"     type="int"    value="115200"/>
+  <param name="frame_id"            type="string" value="laser1"/>
+  <param name="inverted"            type="bool"   value="false"/>
+  <param name="angle_compensate"    type="bool"   value="true"/>
+  <remap from="scan" to="laser_scan1"/>
+  </node>
+
+  <node name="rplidarNode2"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+  <param name="serial_port"         type="string" value="/dev/ttyUSB2"/>
+  <param name="serial_baudrate"     type="int"    value="115200"/>
+  <param name="frame_id"            type="string" value="laser2"/>
+  <param name="inverted"            type="bool"   value="false"/>
+  <param name="angle_compensate"    type="bool"   value="true"/>
+    <remap from="scan" to="laser_scan2"/>
+  </node > 
+
+<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser1"
+	args="0.36 0.335 0.0 2.35619 0.0 0.0 /base_link /laser1 40" />
+
+<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser2"
+	args="-0.36 -0.335 0.0 -0.7853982 0.0 0.0 /base_link /laser2 40" />
+
+<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
+  args="0.0 0.0 0.0 0.0 0.0 0.0 /laser /base_link 40" />
+  
+<node pkg="laser_data_fusion" type="laser_data_fusion_node" 
+    name="laser_data_fusion_node" output="screen" >
+  </node > 
+
+</launch>
