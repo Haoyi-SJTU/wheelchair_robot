@@ -1,0 +1,18 @@
+local_costmap:
+   global_frame: /map
+   robot_base_frame: /base_link
+   update_frequency: 5.0
+   publish_frequency: 1.0
+   static_map: false
+   rolling_window: true
+   width: 6.0
+   height: 6.0
+   resolution: 0.01
+   transform_tolerance: 1.0
+   plugins:
+     - {name: static_layer,            type: "costmap_2d::StaticLayer"}
+#     - {name: obstacle_layer,          type: "costmap_2d::ObstacleLayer"}
+     - {name: simplelayer,             type: "simple_layer_namespace::SimpleLayer"}
+     - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
+   inflation_layer: 
+      inflation_radius: 0.1

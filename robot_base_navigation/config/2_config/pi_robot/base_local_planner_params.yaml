@@ -1,0 +1,43 @@
+controller_frequency: 3.0
+recovery_behavior_enabled: true
+clearing_rotation_allowed: false
+
+TrajectoryPlannerROS:
+  max_vel_x: 0.3
+  min_vel_x: -0.3
+  max_vel_y: 0.1   # zero for a differential drive robot
+  min_vel_y: -0.1
+  max_vel_theta: 0.5
+  min_vel_theta: -0.5
+  min_in_place_vel_theta: 0.2
+  min_in_place_rotational_vel: 0.2
+  escape_vel: -0.2
+  acc_lim_x: 0.2
+  acc_lim_y: 0.1   # zero for a differential drive robot
+  acc_lim_theta: 0.2
+
+  holonomic_robot: true
+  yaw_goal_tolerance: 0.1 # about 11 degrees
+  xy_goal_tolerance: 0.1 # 10 cm
+  gdist_scale: 0.2      # reach the local goal
+  pdist_scale: 0.8      # stay close to the path
+
+  heading_lookahead: 0.3
+  heading_scoring: false
+  heading_scoring_timestep: 0.1
+  meter_scoring: true
+  oscillation_reset_dist: 0.05
+  occdist_scale: 0.2
+  publish_cost_grid_pc: false
+
+  sim_time: 1.7
+  sim_granularity: 0.025
+  angular_sim_granularity: 0.025
+  vx_samples: 4
+  vy_samples: 3   # zero for a differential drive robot
+  vtheta_samples: 20
+  dwa: false
+  simple_attractor: false
+
+  
+
