@@ -3,7 +3,8 @@
 ## 概述
 本文档提供了移动机器人系统的ROS（Robot Operating System）操作指南，包括建图与导航两大部分。建图支持两种方式：gmapping和cartographer，请根据实际需求选择其一。导航部分提供了完整的启动流程与操作说明。
 
-
+![](https://github.com/Haoyi-SJTU/wheelchair_robot/blob/main/fig/Snipaste_2026-03-20_14-51-13.png)
+![](https://github.com/Haoyi-SJTU/laser_data_fusion/blob/main/rviz.jpg)
 
 ## 目录
 - #建图
@@ -125,4 +126,5 @@
 3. **地图保存**：gmapping建图完成后及时保存地图；cartographer建图需按步骤保存并转换格式。
 4. **导航配置**：启动导航前，请确保`map_server`节点加载的地图文件路径与名称正确（在launch文件中修改）。
 5. **坐标系对齐**：建图时建议将小车初始位姿与地图原点对齐，以简化后续坐标变换。
+
 
