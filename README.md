@@ -1,3 +1,135 @@
+# Mobile Robot ROS Operation Guide
+
+## Overview
+This document provides an ROS (Robot Operating System) operation guide for the mobile robot system, covering two main parts: mapping and navigation. Mapping supports two methods: gmapping and cartographer; please choose one based on actual needs. The navigation section provides a complete startup process and operation instructions.
+
+![](https://github.com/Haoyi-SJTU/wheelchair_robot/blob/main/fig/Snipaste_2026-03-20_14-51-13.png)
+![](https://github.com/Haoyi-SJTU/laser_data_fusion/blob/main/rviz.jpg)
+
+## Table of Contents
+- [Mapping](#mapping)
+  - [Mapping with gmapping](#mapping-with-gmapping)
+  - [Mapping with cartographer](#mapping-with-cartographer)
+- [Navigation](#navigation)
+- [Notes](#notes)
+
+## Mapping
+Choose either of the two mapping methods.
+
+### Mapping with gmapping
+**Steps:**
+
+1. **Set USB device permissions** (may need to be executed after every reboot):
+   ```bash
+   sudo chmod 777 /dev/ttyUSB0
+   sudo chmod 777 /dev/ttyUSB1
+   sudo chmod 777 /dev/ttyUSB2
+   ```
+
+2. **Start nodes in order** (recommended to execute in separate terminals):
+   ```bash
+   roscore
+   rosrun N_Robot_Topic NMotionCtrl_X64_Topic /dev/ttyUSB2
+   rosrun robot_base_odometry new_robot_base_odometry
+   # Wait 5 seconds until data output appears in the terminal before proceeding
+   roslaunch rplidar_ros test0_1.launch
+   roslaunch robot_base_mapping mapping.launch
+   ```
+
+3. **Visualization (Optional):**
+   ```bash
+   rosrun rviz rviz
+   ```
+   In RViz, add the `Map` module and select the corresponding topic to view real-time mapping.
+
+4. **Save Map:**
+   After mapping is complete, run the following command to save the map:
+   ```bash
+   rosrun map_server map_saver -f <save_path/filename>
+   ```
+   **Example:**
+   ```bash
+   rosrun map_server map_saver -f ~/map_1
+   ```
+   This will generate `map_1.pgm` (map image) and `map_1.yaml` (map info file). After saving, close the mapping process (`mapping.launch`).
+
+### Mapping with cartographer
+**Applicable Scenario:** Recommended when remote control experiences latency.
+
+**Steps:**
+
+1. **Start LiDAR node:**
+   ```bash
+   roslaunch rplidar_ros test0_1.launch
+   ```
+
+2. **Start cartographer mapping:**
+   ```bash
+   roslaunch cartographer_ros demo_revo_lds_rplidar.launch
+   ```
+
+3. **Visualization (Optional):**
+   ```bash
+   rosrun rviz rviz
+   ```
+   If TF errors occur in RViz, they can be ignored as long as the map displays correctly.
+
+4. **Save Map:**
+   ```bash
+   rosservice call /finish_trajectory 0
+   rosservice call /write_state "{filename: '${HOME}/Downloads/mymap.pbstream'}"
+   rosrun cartographer_ros cartographer_pbstream_to_ros_map -map_filestem=${HOME}/Downloads/mymap -pbstream_filename=${HOME}/Downloads/mymap.pbstream -resolution=0.05
+   ```
+
+## Navigation
+**Steps:**
+
+1. **Set USB device permissions:**
+   ```bash
+   sudo chmod 777 /dev/ttyUSB0
+   sudo chmod 777 /dev/ttyUSB1
+   sudo chmod 777 /dev/ttyUSB2
+   ```
+
+2. **Start nodes:**
+   ```bash
+   rosrun N_Robot_Topic NMotionCtrl_X64_Topic /dev/ttyUSB2
+   rosrun robot_base_odometry new_robot_base_odometry
+   ```
+
+3. **Choose one navigation launch file to start (select one of three):**
+   ```bash
+   roslaunch robot_base_navigation new.launch
+   # OR
+   roslaunch robot_base_navigation teb_nav.launch
+   # OR
+   roslaunch robot_base_navigation nav_with_people.launch
+   ```
+
+4. **Visualization (Optional):**
+   ```bash
+   rosrun rviz rviz
+   ```
+
+5. **Localization Initialization:**
+   - Use the `2D Pose Estimate` tool in RViz to mark the robot's initial pose on the map.
+   - Visualize the `/particlecloud` topic of type `PoseArray`.
+   - Move the robot a short distance using the remote control. If the red arrows gradually converge and align with the actual pose, localization is successful.
+
+6. **Start Navigation:**
+   - **Method 1:** Use the `2D Nav Goal` tool in RViz to directly specify the target pose.
+   - **Method 2:** Publish action commands via a node.
+
+## Notes
+- **Device Ports:** The default configuration in launch files is: LiDAR near the manipulator — `/dev/ttyUSB0`, other LiDAR — `/dev/ttyUSB1`, robot chassis — `/dev/ttyUSB2`. If devices do not match ports, it is recommended to re-plug USB devices and connect them in this order.
+- **Startup Sequence:** When mapping or navigating, strictly follow the documented node startup sequence. Especially after starting the odometry node, wait 5 seconds before moving the robot.
+- **Map Saving:** Save the map promptly after gmapping is complete; for cartographer, follow the steps to save and convert formats.
+- **Navigation Configuration:** Before starting navigation, ensure the map file path and name loaded by the `map_server` node are correct (modify in the launch file).
+- **Coordinate Frame Alignment:** During mapping, it is recommended to align the robot's initial pose with the map origin to simplify subsequent coordinate transformations.
+
+
+---
+
 # 移动机器人ROS操作指南
 
 ## 概述
